@@ -31,10 +31,15 @@ func GetBook(c *fiber.Ctx) {
 func NewBook(c *fiber.Ctx) {
 	c.Send("all books")
 	db := database.DBConn
-	var book Book
-	book.Title = "1984"
-	book.Author = "Orwell"
-	book.Rating = 5
+
+	book := new(Book)
+	if err := c.BodyParser(book); err != nil {
+		c.Status(5003).Send(err)
+		return
+	}
+
+	db.Create(&book)
+
 	db.Create(&book)
 	c.JSON(book)
 }
